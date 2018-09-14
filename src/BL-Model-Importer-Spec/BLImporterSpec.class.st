@@ -7,16 +7,24 @@ Class {
 	#category : #'BL-Model-Importer-Spec'
 }
 
-{ #category : #api }
+{ #category : #adding }
 BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPhase new name: aFamixClassPresenter name.
-	((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
-		outgoingInvocations asOrderedCollection sort: [:a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
+	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+		outgoingInvocations asOrderedCollection sort: [:a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+		select: [:a | a receiver isNil and: [ self isAddingLayout: a ] ]) do: [:createWidgetInvocation | self exploreCreateWidget: createWidgetInvocation ].
+	self halt. 
 	model add: page
 ]
 
-{ #category : #api }
+{ #category : #'private - processing' }
+BLImporterSpec >> exploreCreateWidget: createWidgetInvocation [
+	| widget | 
+	^ ''
+]
+
+{ #category : #adding }
 BLImporterSpec >> generateSourceModelWith: aComposablePresenter [
 	MooseScripts
 		createModelNamed: aComposablePresenter name
@@ -60,4 +68,9 @@ BLImporterSpec >> importPresenter: aComposablePresenter [
 	sourceModel := self generateSourceModelWith: aComposablePresenter.
 	self addToModelFamixClassPresenter: ((sourceModel allModelClasses select: [:class | class name = aComposablePresenter name]) at: 1).
 	^ model
+]
+
+{ #category : #'private - utility' }
+BLImporterSpec >> isAddingLayout: anInvocation [
+	^ anInvocation signature beginsWithAnyOf:  #('newColumn:' 'newRow:')
 ]
