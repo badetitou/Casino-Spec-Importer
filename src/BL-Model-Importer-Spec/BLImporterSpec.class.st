@@ -20,7 +20,7 @@ BLImporterSpec >> generateSourceModelWith: aComposablePresenter [
 	MooseScripts
 		createModelNamed: aComposablePresenter name
 		withPackages: {aComposablePresenter package name}
-		importer: MoosePharoImporterTask
+		importer: MoosePharoImporterTaskSourceAnchor
 		candidateClass: CandidateListOperator
 		mergeClassMetaClass: true
 		contextItems:
