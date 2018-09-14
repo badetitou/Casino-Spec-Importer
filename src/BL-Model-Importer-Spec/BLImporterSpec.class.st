@@ -11,7 +11,8 @@ Class {
 BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPhase new name: aFamixClassPresenter name.
-	(aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1.
+	((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+		outgoingInvocations asOrderedCollection sort: [:a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
 	model add: page
 ]
 
