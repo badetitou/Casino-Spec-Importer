@@ -17,12 +17,12 @@ BaselineOfBLSpecImporter >> baseline: spec [
 
 { #category : #baselines }
 BaselineOfBLSpecImporter >> defineDependencies: spec [
-		spec
-		configuration: 'BL-Toolkit-Core-Extends'
-		with: [ spec
-				versionString: #'development';
+	spec
+			baseline: 'BLToolkit' 
+			with: [ 
+				spec
 				loads: 'core-extented';
-				repository: 'github://badetitou/BL-Toolkit/src' ]
+				repository: 'github://badetitou/BL-Toolkit/:src'.].
 ]
 
 { #category : #baselines }
@@ -35,5 +35,5 @@ BaselineOfBLSpecImporter >> defineGroups: spec [
 BaselineOfBLSpecImporter >> definePackages: spec [
 	spec
 		repository: 'https://github.com/badetitou/BL-ToolKit';
-		package: 'BL-Model-Importer-Spec' with: [ spec requires: #('BL-Toolkit-Core-Extends')].
+		package: 'BL-Model-Importer-Spec' with: [ spec requires: #('BLToolkit')].
 ]
