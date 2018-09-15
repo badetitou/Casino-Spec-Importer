@@ -5,6 +5,27 @@ Class {
 }
 
 { #category : #'visitor-double dispatching' }
+SmalltalkMethodVisitorSourceAnchor >> visitBlockNode: aBlockNode [
+	| local |
+	importer importingContext shouldImportLocalVariable
+		ifTrue: [ aBlockNode arguments
+				do: [ :aVariableNode | 
+					local := self importer factory localVariable new.
+					local name: aVariableNode name asSymbol.
+					local
+						sourceAnchor:
+							(FAMIXPharoPositionAnchor new
+								sourceEntity: self methodEntity;
+								startPos: aVariableNode start;
+								endPos: aVariableNode start + aVariableNode name size - 1).
+					local parentBehaviouralEntity: self methodEntity.
+					importer addEntity: local.
+					methodScope at: aVariableNode name bind: local ] ].
+	self extractCommentsFromNode: aBlockNode.	"self visitArguments: aBlockNode arguments."
+	self visitNode: aBlockNode body
+]
+
+{ #category : #'visitor-double dispatching' }
 SmalltalkMethodVisitorSourceAnchor >> visitMessageNode: aMessageNode [ 
 	 
 	| invocation | 
@@ -35,4 +56,31 @@ SmalltalkMethodVisitorSourceAnchor >> visitMessageNode: aMessageNode [
 	importer importingContext shouldImportArgument 
 		ifTrue: [aMessageNode arguments do: [:each | self visitNode: each]]. 
 	self extractCommentsFromNode: aMessageNode
+]
+
+{ #category : #'visitor-double dispatching' }
+SmalltalkMethodVisitorSourceAnchor >> visitSequenceNode: aSequenceNode [ 
+	"self visitArguments: aSequenceNode temporaries." 
+	 
+	| local | 
+	importer importingContext shouldImportLocalVariable 
+		ifTrue: 
+			[aSequenceNode temporaries 
+				do: 
+					[:aVariableNode |  
+					local := self importer factory localVariable new. 
+					local
+						sourceAnchor:
+							(FAMIXPharoPositionAnchor new
+								sourceEntity: self methodEntity;
+								startPos: aVariableNode start;
+								endPos: aVariableNode start + aVariableNode name size - 1).
+					local name: aVariableNode name asSymbol. 
+					local parentBehaviouralEntity: self methodEntity. 
+					importer addEntity: local. 
+					methodScope 
+						at: aVariableNode name 
+						bind: local]]. 
+	self extractCommentsFromNode: aSequenceNode. 
+	aSequenceNode statements do: [:each | self visitNode: each]
 ]

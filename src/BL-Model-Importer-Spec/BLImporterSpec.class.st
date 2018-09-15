@@ -12,20 +12,40 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPhase new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
-		outgoingInvocations asOrderedCollection sort: [:a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
-		select: [:a | a receiver isNil and: [ self isAddingLayout: a ] ]) do: [:createWidgetInvocation | self exploreCreateWidget: createWidgetInvocation ].
-	self halt. 
+		outgoingInvocations asOrderedCollection
+		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
+		do: [ :createWidgetInvocation | 
+			| widget |
+			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
+			page pageMetiers add: widget ].
 	model add: page
 ]
 
 { #category : #'private - processing' }
-BLImporterSpec >> exploreCreateWidget: createWidgetInvocation [
-	model add: (self factoryCreateWidgetFrom: createWidgetInvocation)
+BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
+	"Must return widgets collection"
+	^ aVariable receivingInvocations collect: [ :aCreationWidgetInvocation | (self isAddingLayout: aCreationWidgetInvocation) ifTrue: [ self exploreCreateWidget: aCreationWidgetInvocation in: aPresenter ] ifFalse: [ self halt. self flag: #'todo' ] ]
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> exploreCreateWidget: createWidgetInvocation in: aPresenter [
+	| widget |
+	widget := self factoryCreateWidgetFrom: createWidgetInvocation.
+	model add: widget.
+	widget addAllWidgets: (self computeWidgetAddByVariable: (self findFirstAttributeOfInvocation: createWidgetInvocation) in: aPresenter).
+	^ widget
 ]
 
 { #category : #accesing }
 BLImporterSpec >> factory [
 	^ BLWidgetFactorySpec 
+]
+
+{ #category : #'as yet unclassified' }
+BLImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
+	^ ((anInvocation from localVariables select: [ :localVariable | localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos ] ) sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) at: 1.
+	
 ]
 
 { #category : #adding }
