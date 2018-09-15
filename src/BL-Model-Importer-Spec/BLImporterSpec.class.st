@@ -25,7 +25,36 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 { #category : #'private - processing' }
 BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 	"Must return widgets collection"
-	^ aVariable receivingInvocations collect: [ :aCreationWidgetInvocation | (self isAddingLayout: aCreationWidgetInvocation) ifTrue: [ self exploreCreateWidget: aCreationWidgetInvocation in: aPresenter ] ifFalse: [ self halt. self flag: #'todo' ] ]
+
+	^ aVariable receivingInvocations
+		collect: [ :aCreationWidgetInvocation | 
+			(self isAddingLayout: aCreationWidgetInvocation)
+				ifTrue: [ self exploreCreateWidget: aCreationWidgetInvocation in: aPresenter ]
+				ifFalse: [ (self isAddWidget: aCreationWidgetInvocation)
+						ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
+						ifFalse: [ "unexpected error" ] ] ]
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> exploreAccess: anAccess [
+	"Must return a widget"
+	(anAccess from outgoingInvocations select: [ :anInvocation | anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos ]) sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
+	self halt.
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter [
+	"must return a widget"
+
+	| selector |
+	selector := ((aCreationWidgetInvocation sourceText
+		copyFrom: aCreationWidgetInvocation sourceAnchor endPos + 1
+		to: aCreationWidgetInvocation sourceText size) substrings: '.') first trimBoth.
+	^ self
+		exploreAccess:
+			(((((aPresenter methods select: [ :a | a name = (selector copyFrom: 2 to: selector size) ]) at: 1) accesses
+				at: 1) to incomingAccesses
+				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) at: 1)
 ]
 
 { #category : #'private - processing' }
@@ -42,7 +71,7 @@ BLImporterSpec >> factory [
 	^ BLWidgetFactorySpec 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'private - processing' }
 BLImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
 	^ ((anInvocation from localVariables select: [ :localVariable | localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos ] ) sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) at: 1.
 	
@@ -92,6 +121,11 @@ BLImporterSpec >> importPresenter: aComposablePresenter [
 	sourceModel := self generateSourceModelWith: aComposablePresenter.
 	self addToModelFamixClassPresenter: ((sourceModel allModelClasses select: [:class | class name = aComposablePresenter name]) at: 1).
 	^ model
+]
+
+{ #category : #'private - utility' }
+BLImporterSpec >> isAddWidget: anInvocation [
+	^ anInvocation signature beginsWithAnyOf:  #('add:')
 ]
 
 { #category : #'private - utility' }
