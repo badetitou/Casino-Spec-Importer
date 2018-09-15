@@ -20,8 +20,12 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 
 { #category : #'private - processing' }
 BLImporterSpec >> exploreCreateWidget: createWidgetInvocation [
-	| widget | 
-	^ ''
+	model add: (self factoryCreateWidgetFrom: createWidgetInvocation)
+]
+
+{ #category : #accesing }
+BLImporterSpec >> factory [
+	^ BLWidgetFactorySpec 
 ]
 
 { #category : #adding }
