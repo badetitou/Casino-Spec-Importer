@@ -5,6 +5,25 @@ Class {
 }
 
 { #category : #'visitor-double dispatching' }
+SmalltalkMethodVisitorSourceAnchor >> visitAssignmentNode: anAssignmentNode [
+	| access |
+	importer importingContext shouldImportAccess
+		ifTrue: [ access := self importer factory access new.
+			access isWrite: true.
+			access variable: (self resolve: anAssignmentNode variable name).
+			access accessor: self methodEntity.
+			access
+				sourceAnchor:
+					(FAMIXPharoPositionAnchor new
+						sourceEntity: self methodEntity;
+						startPos: anAssignmentNode start;
+						endPos: anAssignmentNode stop).
+			importer addEntity: access ].
+	self extractCommentsFromNode: anAssignmentNode.
+	self visitNode: anAssignmentNode value
+]
+
+{ #category : #'visitor-double dispatching' }
 SmalltalkMethodVisitorSourceAnchor >> visitBlockNode: aBlockNode [
 	| local |
 	importer importingContext shouldImportLocalVariable
@@ -17,7 +36,7 @@ SmalltalkMethodVisitorSourceAnchor >> visitBlockNode: aBlockNode [
 							(FAMIXPharoPositionAnchor new
 								sourceEntity: self methodEntity;
 								startPos: aVariableNode start;
-								endPos: aVariableNode start + aVariableNode name size - 1).
+								endPos: aVariableNode stop).
 					local parentBehaviouralEntity: self methodEntity.
 					importer addEntity: local.
 					methodScope at: aVariableNode name bind: local ] ].
@@ -58,28 +77,24 @@ SmalltalkMethodVisitorSourceAnchor >> visitMessageNode: aMessageNode [
 ]
 
 { #category : #'visitor-double dispatching' }
-SmalltalkMethodVisitorSourceAnchor >> visitSequenceNode: aSequenceNode [ 
-	"self visitArguments: aSequenceNode temporaries." 
-	 
-	| local | 
-	importer importingContext shouldImportLocalVariable 
-		ifTrue: 
-			[aSequenceNode temporaries 
-				do: 
-					[:aVariableNode |  
-					local := self importer factory localVariable new. 
+SmalltalkMethodVisitorSourceAnchor >> visitSequenceNode: aSequenceNode [
+	"self visitArguments: aSequenceNode temporaries."
+
+	| local |
+	importer importingContext shouldImportLocalVariable
+		ifTrue: [ aSequenceNode temporaries
+				do: [ :aVariableNode | 
+					local := self importer factory localVariable new.
 					local
 						sourceAnchor:
 							(FAMIXPharoPositionAnchor new
 								sourceEntity: self methodEntity;
 								startPos: aVariableNode start;
-								endPos: aVariableNode start + aVariableNode name size - 1).
-					local name: aVariableNode name asSymbol. 
-					local parentBehaviouralEntity: self methodEntity. 
-					importer addEntity: local. 
-					methodScope 
-						at: aVariableNode name 
-						bind: local]]. 
-	self extractCommentsFromNode: aSequenceNode. 
-	aSequenceNode statements do: [:each | self visitNode: each]
+								endPos: aVariableNode stop).
+					local name: aVariableNode name asSymbol.
+					local parentBehaviouralEntity: self methodEntity.
+					importer addEntity: local.
+					methodScope at: aVariableNode name bind: local ] ].
+	self extractCommentsFromNode: aSequenceNode.
+	aSequenceNode statements do: [ :each | self visitNode: each ]
 ]

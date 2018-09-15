@@ -18,7 +18,7 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 		do: [ :createWidgetInvocation | 
 			| widget |
 			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
-			page pageMetiers add: widget ].
+			page widgets add: widget ].
 	model add: page
 ]
 
@@ -38,8 +38,11 @@ BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 { #category : #'private - processing' }
 BLImporterSpec >> exploreAccess: anAccess [
 	"Must return a widget"
-	(anAccess from outgoingInvocations select: [ :anInvocation | anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos ]) sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
-	self halt.
+	| invocations widget |
+	"First step -> extract the call to create the widget and its attributes"
+	invocations := (anAccess from outgoingInvocations select: [ :anInvocation | anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos and: [ anInvocation sourceAnchor endPos < anAccess sourceAnchor endPos] ]) sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
+	widget := self factoryCreateWidgetFrom: (invocations at: 1).
+	^ widget
 ]
 
 { #category : #'private - processing' }
