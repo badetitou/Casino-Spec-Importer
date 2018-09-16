@@ -8,3 +8,8 @@ Class {
 BLWidgetFactorySpec >> factoryMethod [
 	^ #createWidgetFromSpecInvocation:
 ]
+
+{ #category : #accesing }
+BLWidgetFactorySpec >> factoryMethodForAttribute [
+	^ #createAttributeFromSpecInvocation:
+]
