@@ -60,7 +60,7 @@ FAMIXPharoPositionAnchor >> sourceEntity: anObject [
 
 { #category : #'Famix-File' }
 FAMIXPharoPositionAnchor >> sourceText [
-	^ sourceEntity sourceText
+	^ sourceEntity sourceText copyFrom: startPos to: endPos
 ]
 
 { #category : #'Famix-File' }

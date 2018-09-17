@@ -57,13 +57,10 @@ BLImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter
 	"must return a widget"
 
 	| selector |
-	selector := ((aCreationWidgetInvocation sourceText
-		copyFrom: aCreationWidgetInvocation sourceAnchor endPos + 1
-		to: aCreationWidgetInvocation sourceText size) substrings: '.') first trimBoth.
+	selector := aCreationWidgetInvocation sourceText.
 	^ self
 		exploreAccess:
-			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) beginsWith:  a name ]) at: 1) accesses
-				at: 1) to incomingAccesses
+			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) beginsWith: a name ]) at: 1) accesses at: 1) to incomingAccesses
 				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) at: 1)
 ]
 

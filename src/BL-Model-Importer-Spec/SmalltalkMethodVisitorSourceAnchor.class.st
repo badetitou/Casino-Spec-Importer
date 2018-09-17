@@ -66,8 +66,8 @@ SmalltalkMethodVisitorSourceAnchor >> visitMessageNode: aMessageNode [
 				sourceAnchor:
 					(FAMIXPharoPositionAnchor new
 						sourceEntity: self methodEntity;
-						startPos: aMessageNode keywordsPositions first;
-						endPos: aMessageNode keywordsPositions first + aMessageNode keywords first size - 1).
+						startPos: aMessageNode start;
+						endPos: aMessageNode stop).
 			importer addEntity: invocation ].
 	(aMessageNode isCascaded not or: [ aMessageNode isFirstCascaded ])
 		ifTrue: [ self visitNode: aMessageNode receiver ].
