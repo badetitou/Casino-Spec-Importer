@@ -9,7 +9,6 @@ BLUIDisabled class >> canHandleSpecAttributeInvocation: anInvocation [
 BLUIDisabled class >> createSpecAttributeFor: anInvocation [
 	| rightToken |
 	(anInvocation signature beginsWith: 'disable') ifTrue: [ ^ self new disabled: true ].
-	rightToken := (anInvocation sourceText findString: '.' startingAt: anInvocation sourceAnchor startPos + 1) - 1.
 	^ self new
-		disabled: ((anInvocation sourceText copyFrom: anInvocation sourceAnchor endPos + 1 to: rightToken) includesSubstring: 'false')
+		disabled: ((anInvocation pharoParameters at: 1) includesSubstring: 'false')
 ]

@@ -42,13 +42,13 @@ BLImporterSpec >> exploreAccess: anAccess [
 	| invocations widget |
 	"First step -> extract the call to create the widget and its attributes"
 	invocations := (anAccess from outgoingInvocations
-		select:
-			[ :anInvocation | anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos and: [ anInvocation sourceAnchor endPos <= (anAccess sourceAnchor  endPos) ]])
-		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
+		select: [ :anInvocation | 
+			anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos
+				and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
+		sort: [ :a :b | a sourceAnchor endPos < b sourceAnchor endPos ].
 	widget := self factoryCreateWidgetFrom: (invocations at: 1).
-	2 to: invocations size do: [ :index | 
-		(self factory createAttributeFrom: (invocations at: index))
-			ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
+	2 to: invocations size do:
+		[ :index | (self factory createAttributeFrom: (invocations at: index)) ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
 	^ widget
 ]
 
@@ -60,7 +60,7 @@ BLImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter
 	selector := aCreationWidgetInvocation pharoParameters at: 1.
 	^ self
 		exploreAccess:
-			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) beginsWith: a name ]) at: 1) accesses at: 1) to incomingAccesses
+			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) at: 1) accesses at: 1) to incomingAccesses
 				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) at: 1)
 ]
 
