@@ -43,7 +43,7 @@ BLImporterSpec >> exploreAccess: anAccess [
 	"First step -> extract the call to create the widget and its attributes"
 	invocations := (anAccess from outgoingInvocations
 		select:
-			[ :anInvocation | anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos and: [ anInvocation sourceAnchor startPos < (anAccess sourceText findString: '.' startingAt: anAccess sourceAnchor endPos) ]])
+			[ :anInvocation | anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos and: [ anInvocation sourceAnchor endPos <= (anAccess sourceAnchor  endPos) ]])
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ].
 	widget := self factoryCreateWidgetFrom: (invocations at: 1).
 	2 to: invocations size do: [ :index | 
