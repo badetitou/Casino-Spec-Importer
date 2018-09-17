@@ -10,6 +10,23 @@ Class {
 { #category : #adding }
 BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
+	aFamixClassPresenter ifNil: [ ^ BLPageMetier new name: 'nil'  ].
+	page := BLPageMetier new name: aFamixClassPresenter name.
+	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+		outgoingInvocations asOrderedCollection
+		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
+		do: [ :createWidgetInvocation | 
+			| widget |
+			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
+			page widgets add: widget ].
+	model add: page.
+	^ page
+]
+
+{ #category : #adding }
+BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
+	| page |
 	page := BLPhase new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
@@ -47,8 +64,18 @@ BLImporterSpec >> exploreAccess: anAccess [
 				and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
 		sort: [ :a :b | a sourceAnchor endPos < b sourceAnchor endPos ].
 	widget := self factoryCreateWidgetFrom: (invocations at: 1).
-	2 to: invocations size do:
-		[ :index | (self factory createAttributeFrom: (invocations at: index)) ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
+	"If the widget is not in the selection or BLUI or if it is a Presenter (detectable thanks to the keyword #instanciate:. Example in SpecDemoFormPresenter "
+	widget
+		ifNil: [ ((invocations at: 1) signature beginsWith: 'instantiate:')
+				ifTrue: [ widget := self
+						addToModelFamixClassPresenter:
+							(self
+								findPresenterNamed:( ((invocations at: 1) pharoParameters at: 1)
+								trimRight: [ :char | char = $) ])).]
+				ifFalse: [ "undefined" widget := BLWidget new ] ].
+	2 to: invocations size do: [ :index | 
+		(self factory createAttributeFrom: (invocations at: index))
+			ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
 	^ widget
 ]
 
@@ -82,6 +109,12 @@ BLImporterSpec >> factory [
 BLImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
 	^ ((anInvocation from localVariables select: [ :localVariable | localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos ] ) sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) at: 1.
 	
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> findPresenterNamed: aString [
+	^ (((sourceModel allModelClasses select: [ :class | class name = aString ]) ifEmpty: [ ^ nil ])
+				at: 1).
 ]
 
 { #category : #adding }
@@ -126,7 +159,8 @@ BLImporterSpec >> import [
 BLImporterSpec >> importPresenter: aComposablePresenter [
 	model := MooseModel new name: aComposablePresenter package name.
 	sourceModel := self generateSourceModelWith: aComposablePresenter.
-	self addToModelFamixClassPresenter: ((sourceModel allModelClasses select: [:class | class name = aComposablePresenter name]) at: 1).
+	self
+		addToModelFirstFamixClassPresenter: (self findPresenterNamed: aComposablePresenter name ).
 	^ model
 ]
 
