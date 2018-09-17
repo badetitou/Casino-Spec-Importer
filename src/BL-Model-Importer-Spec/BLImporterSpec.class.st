@@ -57,7 +57,7 @@ BLImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter
 	"must return a widget"
 
 	| selector |
-	selector := aCreationWidgetInvocation sourceText.
+	selector := aCreationWidgetInvocation pharoParameters at: 1.
 	^ self
 		exploreAccess:
 			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) beginsWith: a name ]) at: 1) accesses at: 1) to incomingAccesses
