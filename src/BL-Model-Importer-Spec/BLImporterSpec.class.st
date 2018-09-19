@@ -38,6 +38,13 @@ BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 ]
 
 { #category : #'private - processing' }
+BLImporterSpec >> computeAttributeFromInvocations: invocations forWidget: aWidget [
+	2 to: invocations size do: [ :index | 
+                (self factory createAttributeFrom: (invocations at: index))
+                    ifNotNil: [ :attribute | aWidget addAttribute: attribute ] ]
+]
+
+{ #category : #'private - processing' }
 BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 	"Must return widgets collection"
 	^ aVariable receivingInvocations
@@ -51,17 +58,8 @@ BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 
 { #category : #'private - processing' }
 BLImporterSpec >> exploreAccess: anAccess [
-	"Must return a widget"
-
-	| invocations widget |
-	"First step -> extract the call to create the widget and its attributes"
-	invocations := (anAccess from outgoingInvocations
-		select: [ :anInvocation | 
-			anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos
-				and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
-		sort: [ :a :b | a sourceAnchor endPos < b sourceAnchor endPos ].
-	^ self findFromInvocations: invocations.
-	
+    "Must return a widget"
+    ^ self findFromInvocations: (self outgoingInvocationOfAccess: anAccess)
 ]
 
 { #category : #'private - processing' }
@@ -92,19 +90,25 @@ BLImporterSpec >> factory [
 
 { #category : #'private - processing' }
 BLImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
-	^ ((anInvocation from localVariables select: [ :localVariable | localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos and: [ localVariable sourceAnchor endPos < anInvocation sourceAnchor endPos  ]] ) sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) first.
+    ^ ((anInvocation from localVariables
+        select: [ :localVariable | 
+            localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos
+                and: [ localVariable sourceAnchor endPos < anInvocation sourceAnchor endPos ] ])
+        sort:
+            [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ])
+        first
 ]
 
 { #category : #'private - processing' }
 BLImporterSpec >> findFromInvocations: invocations [
-	| widget |
-	widget := BLSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
-	"If the widget is not in the selection or BLUI or if it is a Presenter (detectable thanks to the keyword #instanciate:. Example in SpecDemoFormPresenter "
-	2 to: invocations size do: [ :index | 
-		(self factory createAttributeFrom: (invocations at: index))
-			ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
-	^ widget
-	
+    | widget |
+    widget := BLSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
+    ((invocations includes: widget source) not and: [ widget source isNotNil ])
+        ifTrue: [ self
+                computeAttributeFromInvocations: (widget source from outgoingInvocations asOrderedCollection sort: [:a :b | a sourceAnchor startPos < b sourceAnchor startPos])
+                forWidget: widget ]
+        ifFalse: [ self computeAttributeFromInvocations: invocations forWidget: widget ].
+    ^ widget
 ]
 
 { #category : #'private - processing' }
@@ -168,4 +172,13 @@ BLImporterSpec >> isAddWidget: anInvocation [
 { #category : #'private - utility' }
 BLImporterSpec >> isAddingLayout: anInvocation [
 	^ anInvocation signature beginsWithAnyOf:  #('newColumn:' 'newRow:')
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> outgoingInvocationOfAccess: anAccess [
+    ^ (anAccess from outgoingInvocations
+        select: [ :anInvocation | 
+            anInvocation sourceAnchor startPos >= anAccess sourceAnchor startPos
+                and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
+        sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]
 ]

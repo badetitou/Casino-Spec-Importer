@@ -6,5 +6,5 @@ Class {
 
 { #category : #accessing }
 BLSpecWidgetFinderEnd >> tryFindFromInvocations: invocations with: anImporter [
-	^ BLWidget new
+    ^ BLWidget new
 ]
