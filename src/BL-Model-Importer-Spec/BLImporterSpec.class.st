@@ -28,21 +28,18 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPhase new name: aFamixClassPresenter name.
-	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+	page widgets addAll: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
-		do: [ :createWidgetInvocation | 
-			| widget |
-			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
-			page widgets add: widget ].
+		collect: [ :createWidgetInvocation | 
+			self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter. ]).
 	model add: page
 ]
 
 { #category : #'private - processing' }
 BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 	"Must return widgets collection"
-
 	^ aVariable receivingInvocations
 		collect: [ :aCreationWidgetInvocation | 
 			(self isAddingLayout: aCreationWidgetInvocation)
@@ -63,20 +60,8 @@ BLImporterSpec >> exploreAccess: anAccess [
 			anInvocation sourceAnchor startPos > anAccess sourceAnchor startPos
 				and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
 		sort: [ :a :b | a sourceAnchor endPos < b sourceAnchor endPos ].
-	widget := self factoryCreateWidgetFrom: (invocations at: 1).
-	"If the widget is not in the selection or BLUI or if it is a Presenter (detectable thanks to the keyword #instanciate:. Example in SpecDemoFormPresenter "
-	widget
-		ifNil: [ ((invocations at: 1) signature beginsWith: 'instantiate:')
-				ifTrue: [ widget := self
-						addToModelFamixClassPresenter:
-							(self
-								findPresenterNamed:( ((invocations at: 1) pharoParameters at: 1)
-								trimRight: [ :char | char = $) ])).]
-				ifFalse: [ "undefined" widget := BLWidget new ] ].
-	2 to: invocations size do: [ :index | 
-		(self factory createAttributeFrom: (invocations at: index))
-			ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
-	^ widget
+	^ self findFromInvocations: invocations.
+	
 ]
 
 { #category : #'private - processing' }
@@ -107,7 +92,18 @@ BLImporterSpec >> factory [
 
 { #category : #'private - processing' }
 BLImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
-	^ ((anInvocation from localVariables select: [ :localVariable | localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos ] ) sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) at: 1.
+	^ ((anInvocation from localVariables select: [ :localVariable | localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos and: [ localVariable sourceAnchor endPos < anInvocation sourceAnchor endPos  ]] ) sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) first.
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> findFromInvocations: invocations [
+	| widget |
+	widget := BLSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
+	"If the widget is not in the selection or BLUI or if it is a Presenter (detectable thanks to the keyword #instanciate:. Example in SpecDemoFormPresenter "
+	2 to: invocations size do: [ :index | 
+		(self factory createAttributeFrom: (invocations at: index))
+			ifNotNil: [ :attribute | widget addAttribute: attribute ] ].
+	^ widget
 	
 ]
 
