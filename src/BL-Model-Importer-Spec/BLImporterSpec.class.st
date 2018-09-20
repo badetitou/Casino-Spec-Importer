@@ -118,10 +118,10 @@ BLImporterSpec >> findPresenterNamed: aString [
 ]
 
 { #category : #adding }
-BLImporterSpec >> generateSourceModelWith: aComposablePresenter [
+BLImporterSpec >> generateSourceModelWith: aComposablePresenter andPackages: packages [
 	MooseScripts
 		createModelNamed: aComposablePresenter name
-		withPackages: {aComposablePresenter package name}
+		withPackages: packages
 		importer: MoosePharoImporterTaskSourceAnchor
 		candidateClass: CandidateListOperator
 		mergeClassMetaClass: true
@@ -157,8 +157,13 @@ BLImporterSpec >> import [
 
 { #category : #api }
 BLImporterSpec >> importPresenter: aComposablePresenter [
+	^ self importPresenter: aComposablePresenter withPackages: { aComposablePresenter package name }
+]
+
+{ #category : #api }
+BLImporterSpec >> importPresenter: aComposablePresenter withPackages: packages [
 	model := MooseModel new name: aComposablePresenter package name.
-	sourceModel := self generateSourceModelWith: aComposablePresenter.
+	sourceModel := self generateSourceModelWith: aComposablePresenter andPackages: packages .
 	self
 		addToModelFirstFamixClassPresenter: (self findPresenterNamed: aComposablePresenter name ).
 	^ model
