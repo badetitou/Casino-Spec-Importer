@@ -10,8 +10,8 @@ Class {
 { #category : #adding }
 BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ BLPageMetier new name: 'nil'  ].
-	page := BLPageMetier new name: aFamixClassPresenter name.
+	aFamixClassPresenter ifNil: [ ^ BLBusinessPage new name: 'nil'  ].
+	page := BLBusinessPage new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
@@ -27,7 +27,7 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 { #category : #adding }
 BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	page := BLPhase new name: aFamixClassPresenter name.
+	page := BLPage new name: aFamixClassPresenter name.
 	page widgets addAll: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
