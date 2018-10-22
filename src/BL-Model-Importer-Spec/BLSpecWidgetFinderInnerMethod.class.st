@@ -1,7 +1,7 @@
 Class {
 	#name : #BLSpecWidgetFinderInnerMethod,
 	#superclass : #BLSpecWidgetFinder,
-	#category : #'BL-Model-Importer-Spec'
+	#category : #'BL-Model-Importer-Spec-Importer'
 }
 
 { #category : #accessing }

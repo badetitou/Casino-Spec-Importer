@@ -4,13 +4,13 @@ I create BL-Model with UI-SubEntities from a Spec application
 Class {
 	#name : #BLImporterSpec,
 	#superclass : #BLWebModel,
-	#category : #'BL-Model-Importer-Spec'
+	#category : #'BL-Model-Importer-Spec-Importer'
 }
 
 { #category : #adding }
 BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ BLBusinessPage new name: 'nil'  ].
+	aFamixClassPresenter ifNil: [ ^ BLBusinessPage new name: 'nil' ].
 	page := BLBusinessPage new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
@@ -28,7 +28,7 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPage new name: aFamixClassPresenter name.
-	page widgets addAllWidgets: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+	page addAllWidgets: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
@@ -39,9 +39,8 @@ BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 
 { #category : #'private - processing' }
 BLImporterSpec >> computeAttributeFromInvocations: invocations forWidget: aWidget [
-	2 to: invocations size do: [ :index | 
-                (self factory createAttributeFrom: (invocations at: index))
-                    ifNotNil: [ :attribute | aWidget addAttribute: attribute ] ]
+	2 to: invocations size do:
+		[ :index | (self factory createAttributeFrom: (invocations at: index)) ifNotNil: [ :attribute | aWidget addAttribute: attribute ] ]
 ]
 
 { #category : #'private - processing' }
@@ -54,6 +53,11 @@ BLImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 				ifFalse: [ (self isAddWidget: aCreationWidgetInvocation)
 						ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
 						ifFalse: [ "unexpected error" ] ] ]
+]
+
+{ #category : #'private - processing' }
+BLImporterSpec >> createFactory [
+	factory := BLWidgetFactorySpec new model: model; yourself
 ]
 
 { #category : #'private - processing' }
@@ -70,8 +74,10 @@ BLImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter
 	selector := aCreationWidgetInvocation pharoParameters at: 1.
 	^ self
 		exploreAccess:
-			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) at: 1) accesses at: 1) to incomingAccesses
-				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) at: 1)
+			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ])
+				at: 1) accesses at: 1) to incomingAccesses
+				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ])
+				at: 1)
 ]
 
 { #category : #'private - processing' }
@@ -81,11 +87,6 @@ BLImporterSpec >> exploreCreateWidget: createWidgetInvocation in: aPresenter [
 	model add: widget.
 	widget addAllWidgets: (self computeWidgetAddByVariable: (self findFirstAttributeOfInvocation: createWidgetInvocation) in: aPresenter).
 	^ widget
-]
-
-{ #category : #accesing }
-BLImporterSpec >> factory [
-	^ BLWidgetFactorySpec 
 ]
 
 { #category : #'private - processing' }
@@ -163,6 +164,7 @@ BLImporterSpec >> importPresenter: aComposablePresenter [
 { #category : #api }
 BLImporterSpec >> importPresenter: aComposablePresenter withPackages: packages [
 	model := MooseModel new name: aComposablePresenter package name.
+	self preImport.
 	sourceModel := self generateSourceModelWith: aComposablePresenter andPackages: packages .
 	self
 		addToModelFirstFamixClassPresenter: (self findPresenterNamed: aComposablePresenter name ).

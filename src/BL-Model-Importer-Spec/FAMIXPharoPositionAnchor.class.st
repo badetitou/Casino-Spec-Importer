@@ -6,7 +6,7 @@ Class {
 		'endPos',
 		'sourceEntity'
 	],
-	#category : #'BL-Model-Importer-Spec'
+	#category : #'BL-Model-Importer-Spec-Visitor'
 }
 
 { #category : #meta }

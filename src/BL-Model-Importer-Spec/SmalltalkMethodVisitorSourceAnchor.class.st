@@ -1,7 +1,7 @@
 Class {
 	#name : #SmalltalkMethodVisitorSourceAnchor,
 	#superclass : #SmalltalkMethodVisitor,
-	#category : #'BL-Model-Importer-Spec'
+	#category : #'BL-Model-Importer-Spec-Visitor'
 }
 
 { #category : #'visitor-double dispatching' }

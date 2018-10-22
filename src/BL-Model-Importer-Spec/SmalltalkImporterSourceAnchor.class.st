@@ -1,7 +1,7 @@
 Class {
 	#name : #SmalltalkImporterSourceAnchor,
 	#superclass : #SmalltalkImporter,
-	#category : #'BL-Model-Importer-Spec'
+	#category : #'BL-Model-Importer-Spec-Visitor'
 }
 
 { #category : #'private-entity-creation' }
