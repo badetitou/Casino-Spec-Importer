@@ -19,7 +19,7 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 		do: [ :createWidgetInvocation | 
 			| widget |
 			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
-			page widgets add: widget ].
+			page addWidget: widget ].
 	model add: page.
 	^ page
 ]
@@ -28,7 +28,7 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPage new name: aFamixClassPresenter name.
-	page widgets addAll: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+	page widgets addAllWidgets: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
@@ -151,7 +151,7 @@ BLImporterSpec >> generateSourceModelWith: aComposablePresenter andPackages: pac
 BLImporterSpec >> import [
 	"begin"
 	model := MooseModel new name: 'Showroom'; yourself.
-	model add: BLPhase new.
+	model add: BLPage new.
 	^ model
 ]
 
