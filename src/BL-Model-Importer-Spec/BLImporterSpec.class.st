@@ -10,7 +10,7 @@ Class {
 { #category : #adding }
 BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ BLPage new name: 'nil' ].
+	aFamixClassPresenter ifNil: [ ^ BLPage new ].
 	page := BLPage new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
