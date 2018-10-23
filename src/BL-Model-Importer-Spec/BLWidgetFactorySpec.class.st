@@ -5,11 +5,12 @@ Class {
 }
 
 { #category : #accesing }
-BLWidgetFactorySpec >> factoryMethod [
-	^ #createWidgetFromSpecInvocation:
+BLWidgetFactorySpec >> createAttributeFrom: anObject [
+	^ BLAttribute createAttributeFromSpecInvocation: anObject.
 ]
 
 { #category : #accesing }
-BLWidgetFactorySpec >> factoryMethodForAttribute [
-	^ #createAttributeFromSpecInvocation:
+BLWidgetFactorySpec >> createWidgetFrom: anObject [
+	^ BLWidget createWidgetFromSpecInvocation: anObject
+
 ]

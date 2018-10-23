@@ -168,6 +168,7 @@ BLImporterSpec >> importPresenter: aComposablePresenter withPackages: packages [
 	sourceModel := self generateSourceModelWith: aComposablePresenter andPackages: packages .
 	self
 		addToModelFirstFamixClassPresenter: (self findPresenterNamed: aComposablePresenter name ).
+	self postImport.
 	^ model
 ]
 
@@ -188,4 +189,9 @@ BLImporterSpec >> outgoingInvocationOfAccess: anAccess [
             anInvocation sourceAnchor startPos >= anAccess sourceAnchor startPos
                 and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
         sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]
+]
+
+{ #category : #api }
+BLImporterSpec >> postImport [ 
+	model allBLUiPanel do: [ :panel | model add: panel layout. model addAll: panel layout cell ]
 ]
