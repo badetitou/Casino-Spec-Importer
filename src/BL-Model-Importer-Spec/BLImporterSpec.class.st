@@ -39,8 +39,11 @@ BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 
 { #category : #'private - processing' }
 BLImporterSpec >> computeAttributeFromInvocations: invocations forWidget: aWidget [
-	2 to: invocations size do:
-		[ :index | (self factory createAttributeFrom: (invocations at: index)) ifNotNil: [ :attribute | aWidget addAttribute: attribute ] ]
+	2 to: invocations size do: [ :index | 
+		(self factory createAttributeFrom: (invocations at: index))
+			ifNotNil: [ :attribute | 
+				aWidget addAttribute: attribute.
+				model silentlyAdd: attribute ] ]
 ]
 
 { #category : #'private - processing' }
