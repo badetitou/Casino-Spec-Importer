@@ -28,12 +28,14 @@ BLImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 BLImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
 	page := BLPage new name: aFamixClassPresenter name.
-	page addAllWidgets: (((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
-		outgoingInvocations asOrderedCollection
-		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
-		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
-		collect: [ :createWidgetInvocation | 
-			self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter. ]).
+	page
+		addAllWidgets:
+			(((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
+				outgoingInvocations asOrderedCollection
+				sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+				select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
+				collect: [ :createWidgetInvocation | 
+					self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter ]).
 	model add: page
 ]
 
@@ -75,20 +77,24 @@ BLImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter
 
 	| selector |
 	selector := aCreationWidgetInvocation pharoParameters at: 1.
-	^ self
+	^ (self
 		exploreAccess:
 			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ])
 				at: 1) accesses at: 1) to incomingAccesses
 				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ])
-				at: 1)
+				at: 1)) name: (selector removePrefix: '#'); yourself
 ]
 
 { #category : #'private - processing' }
 BLImporterSpec >> exploreCreateWidget: createWidgetInvocation in: aPresenter [
 	| widget |
 	widget := self factoryCreateWidgetFrom: createWidgetInvocation.
-	model add: widget.
-	widget addAllWidgets: (self computeWidgetAddByVariable: (self findFirstAttributeOfInvocation: createWidgetInvocation) in: aPresenter).
+	model silentlyAdd: widget.
+	widget
+		addAllWidgets:
+			(self
+				computeWidgetAddByVariable: (self findFirstAttributeOfInvocation: createWidgetInvocation)
+				in: aPresenter).
 	^ widget
 ]
 
@@ -105,14 +111,16 @@ BLImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
 
 { #category : #'private - processing' }
 BLImporterSpec >> findFromInvocations: invocations [
-    | widget |
-    widget := BLSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
-    ((invocations includes: widget source) not and: [ widget source isNotNil ])
-        ifTrue: [ self
-                computeAttributeFromInvocations: (widget source from outgoingInvocations asOrderedCollection sort: [:a :b | a sourceAnchor startPos < b sourceAnchor startPos])
-                forWidget: widget ]
-        ifFalse: [ self computeAttributeFromInvocations: invocations forWidget: widget ].
-    ^ widget
+	| widget |
+	widget := BLSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
+	((invocations includes: widget source) not and: [ widget source isNotNil ])
+		ifTrue: [ self
+				computeAttributeFromInvocations:
+					(widget source from outgoingInvocations asOrderedCollection
+						sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+				forWidget: widget ]
+		ifFalse: [ self computeAttributeFromInvocations: invocations forWidget: widget ].
+	^ widget
 ]
 
 { #category : #'private - processing' }
