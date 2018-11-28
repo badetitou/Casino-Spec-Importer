@@ -1,11 +1,11 @@
 Class {
-	#name : #BaselineOfBLSpecImporter,
+	#name : #BaselineOfCasinoSpecImporter,
 	#superclass : #BaselineOf,
-	#category : #BaselineOfBLSpecImporter
+	#category : #BaselineOfCasinoSpecImporter
 }
 
 { #category : #baselines }
-BaselineOfBLSpecImporter >> baseline: spec [
+BaselineOfCasinoSpecImporter >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
@@ -16,7 +16,7 @@ BaselineOfBLSpecImporter >> baseline: spec [
 ]
 
 { #category : #baselines }
-BaselineOfBLSpecImporter >> defineDependencies: spec [
+BaselineOfCasinoSpecImporter >> defineDependencies: spec [
 	spec
 			baseline: 'BLToolkit' 
 			with: [ 
@@ -26,14 +26,14 @@ BaselineOfBLSpecImporter >> defineDependencies: spec [
 ]
 
 { #category : #baselines }
-BaselineOfBLSpecImporter >> defineGroups: spec [
+BaselineOfCasinoSpecImporter >> defineGroups: spec [
 	spec
-		group: 'default' with: #('BL-Model-Importer-Spec')
+		group: 'default' with: #('Casino-Importer-Spec')
 ]
 
 { #category : #baselines }
-BaselineOfBLSpecImporter >> definePackages: spec [
+BaselineOfCasinoSpecImporter >> definePackages: spec [
 	spec
 		repository: 'https://github.com/badetitou/BL-ToolKit';
-		package: 'BL-Model-Importer-Spec' with: [ spec requires: #('BLToolkit')].
+		package: 'Casino-Importer-Spec' with: [ spec requires: #('BLToolkit')].
 ]
