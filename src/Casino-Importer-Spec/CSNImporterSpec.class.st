@@ -10,8 +10,8 @@ Class {
 { #category : #adding }
 CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ BLPage new ].
-	page := BLPage new name: aFamixClassPresenter name.
+	aFamixClassPresenter ifNil: [ ^ BLBusinessPage new ].
+	page := BLBusinessPage new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
 		outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
@@ -20,7 +20,7 @@ CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 			| widget |
 			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
 			page addWidget: widget ].
-	model add: page.
+	model silentlyAdd: page.
 	^ page
 ]
 
@@ -41,11 +41,18 @@ CSNImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 
 { #category : #'private - processing' }
 CSNImporterSpec >> computeAttributeFromInvocations: invocations forWidget: aWidget [
-	2 to: invocations size do: [ :index | 
-		(self factory createAttributeFrom: (invocations at: index))
+	invocations do: [ :invoc | 
+		(self factory createAttributeFrom: invoc)
 			ifNotNil: [ :attribute | 
 				aWidget addAttribute: attribute.
 				model silentlyAdd: attribute ] ]
+]
+
+{ #category : #adding }
+CSNImporterSpec >> computeStartPosOfAccessAfter: anAccess [
+	" If the access is an affectation (blabla := hello). We have to take the endPos of the access itSelf"
+	anAccess isWrite ifTrue: [ ^ anAccess sourceAnchor endPos ].
+	^ (((anAccess from accesses asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]) select: [ :access |  access sourceAnchor startPos > anAccess sourceAnchor startPos ]) at: 1 ifAbsent: [ ^ anAccess from sourceAnchor sourceText size ]) sourceAnchor startPos
 ]
 
 { #category : #'private - processing' }
@@ -67,8 +74,31 @@ CSNImporterSpec >> createFactory [
 
 { #category : #'private - processing' }
 CSNImporterSpec >> exploreAccess: anAccess [
-    "Must return a widget"
-    ^ self findFromInvocations: (self outgoingInvocationOfAccess: anAccess)
+	"Must return a widget"
+
+	| widget |
+	widget := self findFromInvocations: (self outgoingInvocationOfAccess: anAccess).
+	self
+		computeAttributeFromInvocations:
+			(anAccess to accessors
+				collect: [ :accessor | 
+					| localAccesses |
+					localAccesses := accessor accesses select: [ :anLocalAccess | anLocalAccess to = anAccess to ].
+					accessor outgoingInvocations
+						select: [ :invoc |
+							localAccesses
+								anySatisfy: [ :anLocalAccess | 
+									invoc sourceAnchor startPos >= anLocalAccess sourceAnchor startPos
+										and: [ invoc sourceAnchor endPos <= (self computeStartPosOfAccessAfter: anLocalAccess) ] ] ] ]) asOrderedCollection flattened
+		forWidget: widget.
+	"((invocations includes: widget source) not and: [ widget source isNotNil ])
+		ifTrue: [ self
+				computeAttributeFromInvocations:
+					(widget source from outgoingInvocations asOrderedCollection
+						sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+				forWidget: widget ]
+		ifFalse: [ self computeAttributeFromInvocations: invocations forWidget: widget ]."
+	^ widget
 ]
 
 { #category : #'private - processing' }
@@ -113,13 +143,6 @@ CSNImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
 CSNImporterSpec >> findFromInvocations: invocations [
 	| widget |
 	widget := CSNSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
-	((invocations includes: widget source) not and: [ widget source isNotNil ])
-		ifTrue: [ self
-				computeAttributeFromInvocations:
-					(widget source from outgoingInvocations asOrderedCollection
-						sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
-				forWidget: widget ]
-		ifFalse: [ self computeAttributeFromInvocations: invocations forWidget: widget ].
 	^ widget
 ]
 
@@ -200,9 +223,4 @@ CSNImporterSpec >> outgoingInvocationOfAccess: anAccess [
             anInvocation sourceAnchor startPos >= anAccess sourceAnchor startPos
                 and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
         sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]
-]
-
-{ #category : #api }
-CSNImporterSpec >> postImport [ 
-	model allBLUiPanel do: [ :panel | model add: panel layout. model addAll: panel layout cell ]
 ]

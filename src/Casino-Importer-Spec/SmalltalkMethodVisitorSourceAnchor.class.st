@@ -98,3 +98,27 @@ SmalltalkMethodVisitorSourceAnchor >> visitSequenceNode: aSequenceNode [
 	self extractCommentsFromNode: aSequenceNode.
 	aSequenceNode statements do: [ :each | self visitNode: each ]
 ]
+
+{ #category : #'visitor-double dispatching' }
+SmalltalkMethodVisitorSourceAnchor >> visitVariableNode: aVariableNode [
+	importer importingContext shouldImportAccess
+		ifTrue: [ | access namedEntity global |
+			"Warning! Smalltalk is both a Namespace and a GlobalVariable.
+		By default the importer resolves Smalltalk to the namespace (for class and namespace creation).
+		When we access Smalltalk as a variable, we create an access to the SmalltalkGlobalVariable instead"
+			aVariableNode name = 'Smalltalk'
+				ifTrue: [ global := importer ensureGlobalVariable: #SmalltalkGlobalVariable value: Smalltalk.
+					access := self createAccessTo: global writing: false ]
+				ifFalse: [ namedEntity := self resolve: aVariableNode name.
+					access := (namedEntity isKindOf: self importer factory containerEntity)
+						ifTrue: [ self createReferenceTo: namedEntity ]
+						ifFalse: [ self createAccessTo: namedEntity writing: false ] ].
+			access
+				sourceAnchor:
+					(FAMIXPharoPositionAnchor new
+						sourceEntity: self methodEntity;
+						startPos: aVariableNode start;
+						endPos: aVariableNode stop).
+			importer addEntity: access ].
+	self extractCommentsFromNode: aVariableNode
+]
