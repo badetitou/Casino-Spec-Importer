@@ -64,7 +64,8 @@ CSNImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 				ifTrue: [ self exploreCreateWidget: aCreationWidgetInvocation in: aPresenter ]
 				ifFalse: [ (self isAddWidget: aCreationWidgetInvocation)
 						ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
-						ifFalse: [ "unexpected error" ] ] ]
+						ifFalse: [ (self isAddLayoutAndWidgetAtTheSameTime: aCreationWidgetInvocation)  							ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
+							ifFalse: [ "unexpectedError" ] ] ] ]
 ]
 
 { #category : #'private - processing' }
@@ -112,7 +113,7 @@ CSNImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresente
 			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ])
 				at: 1) accesses at: 1) to incomingAccesses
 				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ])
-				at: 1)) name: (selector removePrefix: '#'); yourself
+				at: 1)) name: (selector removePrefix: '#'); source: aCreationWidgetInvocation; yourself
 ]
 
 { #category : #'private - processing' }
@@ -206,6 +207,11 @@ CSNImporterSpec >> importPresenter: aComposablePresenter withPackages: packages 
 	^ model
 ]
 
+{ #category : #'private - processing' }
+CSNImporterSpec >> isAddLayoutAndWidgetAtTheSameTime: anInvocation [
+	^ anInvocation signature beginsWithAnyOf:  #('newColumn:' 'newRow:')
+]
+
 { #category : #'private - utility' }
 CSNImporterSpec >> isAddWidget: anInvocation [
 	^ anInvocation signature beginsWithAnyOf:  #('add:')
@@ -213,7 +219,8 @@ CSNImporterSpec >> isAddWidget: anInvocation [
 
 { #category : #'private - utility' }
 CSNImporterSpec >> isAddingLayout: anInvocation [
-	^ anInvocation signature beginsWithAnyOf:  #('newColumn:' 'newRow:')
+	^ (anInvocation signature beginsWithAnyOf:  #('newColumn:' 'newRow:')) and: [ 
+	anInvocation sourceAnchor sourceText matchesRegex: '.*\[.*\].*'  ]
 ]
 
 { #category : #'private - processing' }

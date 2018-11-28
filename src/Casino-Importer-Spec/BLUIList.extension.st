@@ -2,5 +2,5 @@ Extension { #name : #BLUIList }
 
 { #category : #'*Casino-Importer-Spec' }
 BLUIList class >> specCanHandle: anInvocation [
-	^ anInvocation signature beginsWith: 'newList'
+	^ #('newIconList' 'newList') anySatisfy: [ :keyword | anInvocation signature beginsWith: keyword ]  
 ]
