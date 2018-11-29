@@ -139,6 +139,7 @@ CSNImporterSpec >> exploreCreateWidget: createWidgetInvocation in: aPresenter [
 			(self
 				computeWidgetAddByVariable: (self findFirstAttributeOfInvocation: createWidgetInvocation)
 				in: aPresenter).
+				self createLayoutAttributeFrom: createWidgetInvocation for: widget.
 	^ widget
 ]
 
