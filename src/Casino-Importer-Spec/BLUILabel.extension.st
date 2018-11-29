@@ -7,6 +7,8 @@ BLUILabel class >> canHandleSpecAttributeInvocation: anInvocation [
 
 { #category : #'*Casino-Importer-Spec' }
 BLUILabel class >> createSpecAttributeFor: anInvocation [
-
-	^ self new text: (anInvocation pharoParameters at: 1)
+	^ self new
+	name: (anInvocation pharoKeywords first removeSuffix: ':');
+		text: anInvocation pharoParameters first;
+		yourself
 ]

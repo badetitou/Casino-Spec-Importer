@@ -7,8 +7,9 @@ BLUIDisabled class >> canHandleSpecAttributeInvocation: anInvocation [
 
 { #category : #'*Casino-Importer-Spec' }
 BLUIDisabled class >> createSpecAttributeFor: anInvocation [
-	| rightToken |
-	(anInvocation signature beginsWith: 'disable') ifTrue: [ ^ self new disabled: true ].
+	(anInvocation signature beginsWith: 'disable')
+		ifTrue: [ ^ self new disabled: true ].
 	^ self new
+		name: (anInvocation pharoKeywords first removeSuffix: ':');
 		disabled: ((anInvocation pharoParameters at: 1) includesSubstring: 'false')
 ]

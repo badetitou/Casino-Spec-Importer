@@ -7,6 +7,8 @@ BLUIValue class >> canHandleSpecAttributeInvocation: anInvocation [
 
 { #category : #'*Casino-Importer-Spec' }
 BLUIValue class >> createSpecAttributeFor: anInvocation [
-	
-	^ self new text: (anInvocation pharoParameters at: 1); yourself
+	^ self new
+	name: (anInvocation pharoKeywords first removeSuffix: ':');
+		text: anInvocation pharoParameters first;
+		yourself
 ]

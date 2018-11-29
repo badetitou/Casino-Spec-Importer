@@ -51,26 +51,41 @@ CSNImporterSpec >> computeAttributeFromInvocations: invocations forWidget: aWidg
 { #category : #adding }
 CSNImporterSpec >> computeStartPosOfAccessAfter: anAccess [
 	" If the access is an affectation (blabla := hello). We have to take the endPos of the access itSelf"
-	anAccess isWrite ifTrue: [ ^ anAccess sourceAnchor endPos ].
-	^ (((anAccess from accesses asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]) select: [ :access |  access sourceAnchor startPos > anAccess sourceAnchor startPos ]) at: 1 ifAbsent: [ ^ anAccess from sourceAnchor sourceText size ]) sourceAnchor startPos
+
+	anAccess isWrite
+		ifTrue: [ ^ anAccess sourceAnchor endPos ].
+	^ (((anAccess from accesses asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+		select: [ :access | access sourceAnchor startPos > anAccess sourceAnchor startPos ]) at: 1 ifAbsent: [ ^ anAccess from sourceAnchor sourceText size ])
+		sourceAnchor startPos
 ]
 
 { #category : #'private - processing' }
 CSNImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 	"Must return widgets collection"
+
 	^ aVariable receivingInvocations
 		collect: [ :aCreationWidgetInvocation | 
 			(self isAddingLayout: aCreationWidgetInvocation)
 				ifTrue: [ self exploreCreateWidget: aCreationWidgetInvocation in: aPresenter ]
 				ifFalse: [ (self isAddWidget: aCreationWidgetInvocation)
 						ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
-						ifFalse: [ (self isAddLayoutAndWidgetAtTheSameTime: aCreationWidgetInvocation)  							ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
-							ifFalse: [ "unexpectedError" ] ] ] ]
+						ifFalse: [ (self isAddLayoutAndWidgetAtTheSameTime: aCreationWidgetInvocation)
+								ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
+								ifFalse: [ "unexpectedError" ] ] ] ]
 ]
 
 { #category : #'private - processing' }
 CSNImporterSpec >> createFactory [
 	factory := CSNWidgetFactorySpec new model: model; yourself
+]
+
+{ #category : #'private - processing' }
+CSNImporterSpec >> createLayoutAttributeFrom: aCreationWidgetInvocation for: widget [
+	2 to: aCreationWidgetInvocation pharoKeywords size do: [ :position | 
+		(self factory
+			createLayoutAttributeFrom: (aCreationWidgetInvocation pharoKeywords at: position)
+			with: (aCreationWidgetInvocation pharoParameters at: position))
+			ifNotNil: [ :attribute | model silentlyAdd: attribute. widget addAttribute: attribute ] ]
 ]
 
 { #category : #'private - processing' }
@@ -92,13 +107,6 @@ CSNImporterSpec >> exploreAccess: anAccess [
 									invoc sourceAnchor startPos >= anLocalAccess sourceAnchor startPos
 										and: [ invoc sourceAnchor endPos <= (self computeStartPosOfAccessAfter: anLocalAccess) ] ] ] ]) asOrderedCollection flattened
 		forWidget: widget.
-	"((invocations includes: widget source) not and: [ widget source isNotNil ])
-		ifTrue: [ self
-				computeAttributeFromInvocations:
-					(widget source from outgoingInvocations asOrderedCollection
-						sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
-				forWidget: widget ]
-		ifFalse: [ self computeAttributeFromInvocations: invocations forWidget: widget ]."
 	^ widget
 ]
 
@@ -106,14 +114,19 @@ CSNImporterSpec >> exploreAccess: anAccess [
 CSNImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter [
 	"must return a widget"
 
-	| selector |
+	| selector widget |
 	selector := aCreationWidgetInvocation pharoParameters at: 1.
-	^ (self
+	widget := (self
 		exploreAccess:
-			(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ])
-				at: 1) accesses at: 1) to incomingAccesses
-				select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ])
-				at: 1)) name: (selector removePrefix: '#'); source: aCreationWidgetInvocation; yourself
+		(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ])
+		at: 1) accesses at: 1) to incomingAccesses
+		select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ])
+		at: 1))
+		name: (selector removePrefix: '#');
+		source: aCreationWidgetInvocation;
+		yourself.
+	self createLayoutAttributeFrom: aCreationWidgetInvocation for: widget.
+	^ widget
 ]
 
 { #category : #'private - processing' }

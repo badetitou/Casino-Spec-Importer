@@ -8,6 +8,7 @@ BLUITitle class >> canHandleSpecAttributeInvocation: anInvocation [
 { #category : #'*Casino-Importer-Spec' }
 BLUITitle class >> createSpecAttributeFor: anInvocation [
 	^ self new
-		text: (anInvocation pharoParameters at: 1);
+	name: (anInvocation pharoKeywords first removeSuffix: ':');
+		text: anInvocation pharoParameters first;
 		yourself
 ]
