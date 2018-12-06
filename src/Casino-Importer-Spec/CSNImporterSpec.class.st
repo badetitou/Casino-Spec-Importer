@@ -85,7 +85,9 @@ CSNImporterSpec >> createLayoutAttributeFrom: aCreationWidgetInvocation for: wid
 		(self factory
 			createLayoutAttributeFrom: (aCreationWidgetInvocation pharoKeywords at: position)
 			with: (aCreationWidgetInvocation pharoParameters at: position))
-			ifNotNil: [ :attribute | model silentlyAdd: attribute. widget addAttribute: attribute ] ]
+			ifNotNil: [ :attribute | 
+				model silentlyAdd: attribute.
+				widget addAttribute: attribute ] ]
 ]
 
 { #category : #'private - processing' }
