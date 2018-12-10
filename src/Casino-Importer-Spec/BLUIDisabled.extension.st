@@ -11,5 +11,5 @@ BLUIDisabled class >> createSpecAttributeFor: anInvocation [
 		ifTrue: [ ^ self new disabled: true ].
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
-		disabled: ((anInvocation pharoParameters at: 1) includesSubstring: 'false')
+		disabled: ((anInvocation pharoParameters first) includesSubstring: 'false')
 ]

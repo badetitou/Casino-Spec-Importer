@@ -15,7 +15,7 @@ BLAttribute class >> createAttributeFromSpecInvocation: anInvocation [
 	self subclasses
 		do: [ :subclass | 
 			| try |
-			try := subclass createAttributeFromSpecInvocation: anInvocation .
+			try := subclass createAttributeFromSpecInvocation: anInvocation.
 			try ifNotNil: [ ^ try ] ].
 	(self canHandleSpecAttributeInvocation: anInvocation)
 		ifTrue: [ ^ self createSpecAttributeFor: anInvocation ]

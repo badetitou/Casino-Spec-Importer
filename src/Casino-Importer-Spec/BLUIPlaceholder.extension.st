@@ -7,8 +7,10 @@ BLUIPlaceholder class >> canHandleSpecAttributeInvocation: anInvocation [
 
 { #category : #'*Casino-Importer-Spec' }
 BLUIPlaceholder class >> createSpecAttributeFor: anInvocation [
-	
-	^ self new 
+	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
-		text: (anInvocation pharoParameters first); yourself
+		text: (anInvocation pharoParameters first
+				removePrefix: '''';
+				removeSuffix: '''');
+		yourself
 ]
