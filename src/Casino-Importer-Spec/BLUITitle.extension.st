@@ -9,8 +9,7 @@ BLUITitle class >> canHandleSpecAttributeInvocation: anInvocation [
 BLUITitle class >> createSpecAttributeFor: anInvocation [
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
-		text: (anInvocation pharoParameters first
-				removePrefix: '''';
-				removeSuffix: '''');
+		text:
+			((anInvocation pharoParameters first removePrefix: '''') removeSuffix: '''');
 		yourself
 ]
