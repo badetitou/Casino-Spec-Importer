@@ -10,10 +10,9 @@ Class {
 { #category : #adding }
 CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ BLBusinessPage new ].
-	page := BLBusinessPage new name: aFamixClassPresenter name.
-	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
-		outgoingInvocations asOrderedCollection
+	aFamixClassPresenter ifNil: [ ^ BLUIContainer new ].
+	page := BLUIContainer new name: aFamixClassPresenter name.
+	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
 		do: [ :createWidgetInvocation | 
