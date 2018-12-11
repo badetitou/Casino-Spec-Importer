@@ -3,7 +3,7 @@ Extension { #name : #BLUIPanel }
 { #category : #'*Casino-Importer-Spec' }
 BLUIPanel class >> newInstanceFor: anInvocation [
 	| newInstance |
-	newInstance := self new.
+	newInstance := super newInstanceFor: anInvocation.
 	(anInvocation signature beginsWith: 'newColumn:')
 		ifTrue: [ newInstance layout: BLUIVerticalLayout new ].
 	(anInvocation signature beginsWith: 'newRow:')

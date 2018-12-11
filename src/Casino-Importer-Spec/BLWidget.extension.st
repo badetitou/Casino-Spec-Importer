@@ -9,7 +9,7 @@ BLWidget class >> createWidgetFromSpecInvocation: anInvocation [
 
 { #category : #'*Casino-Importer-Spec' }
 BLWidget class >> newInstanceFor: anInvocation [
-	^ self new
+	^ self new source: anInvocation; yourself
 ]
 
 { #category : #'*Casino-Importer-Spec' }

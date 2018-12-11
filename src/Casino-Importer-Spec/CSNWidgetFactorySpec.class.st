@@ -17,5 +17,4 @@ CSNWidgetFactorySpec >> createLayoutAttributeFrom: aKeyword with: aValue [
 { #category : #accesing }
 CSNWidgetFactorySpec >> createWidgetFrom: anObject [
 	^ BLWidget createWidgetFromSpecInvocation: anObject
-
 ]

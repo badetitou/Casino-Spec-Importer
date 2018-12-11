@@ -61,7 +61,6 @@ CSNImporterSpec >> computeStartPosOfAccessAfter: anAccess [
 { #category : #'private - processing' }
 CSNImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 	"Must return widgets collection"
-
 	^ aVariable receivingInvocations
 		collect: [ :aCreationWidgetInvocation | 
 			(self isAddingLayout: aCreationWidgetInvocation)
@@ -70,7 +69,7 @@ CSNImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 						ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
 						ifFalse: [ (self isAddLayoutAndWidgetAtTheSameTime: aCreationWidgetInvocation)
 								ifTrue: [ self exploreAddInvocation: aCreationWidgetInvocation in: aPresenter ]
-								ifFalse: [ "unexpectedError" ] ] ] ]
+								ifFalse: [ "unexpectedError" ] ] ] ] thenReject: #isNil
 ]
 
 { #category : #'private - processing' }
@@ -116,13 +115,11 @@ CSNImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresente
 	"must return a widget"
 
 	| selector widget |
-	selector := aCreationWidgetInvocation pharoParameters at: 1.
+	selector := aCreationWidgetInvocation pharoParameters first.
 	widget := (self
 		exploreAccess:
-		(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ])
-		at: 1) accesses at: 1) to incomingAccesses
-		select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ])
-		at: 1))
+		(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) first) accesses first) to incomingAccesses
+		select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) first))
 		name: (selector removePrefix: '#');
 		source: aCreationWidgetInvocation;
 		yourself.
