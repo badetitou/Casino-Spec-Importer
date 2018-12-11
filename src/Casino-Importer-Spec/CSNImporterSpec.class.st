@@ -118,7 +118,7 @@ CSNImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresente
 	selector := aCreationWidgetInvocation pharoParameters first.
 	widget := (self
 		exploreAccess:
-		(((((aPresenter methods select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) first) accesses first) to incomingAccesses
+		((((((aPresenter withSuperclassHierarchy flatCollect: #methods) select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) first) accesses first) to incomingAccesses
 		select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) first))
 		name: (selector removePrefix: '#');
 		source: aCreationWidgetInvocation;

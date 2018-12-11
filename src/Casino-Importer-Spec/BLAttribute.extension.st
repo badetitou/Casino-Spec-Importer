@@ -6,7 +6,7 @@ BLAttribute class >> canHandleSpecAttributeInvocation: anInvocation [
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> canHandleSpecLayoutAttributeKeyword: aKeyword [
+BLAttribute class >> canHandleSpecLayoutAttributeFromKeyword: aKeyword withValue: aValue [
 	^ false
 ]
 
@@ -29,7 +29,7 @@ BLAttribute class >> createLayoutAttributeFromKeyword: aKeyword withValue: aValu
 			| try |
 			try := subclass createLayoutAttributeFromKeyword: aKeyword withValue: aValue.
 			try ifNotNil: [ ^ try ] ].
-	(self canHandleSpecLayoutAttributeKeyword: aKeyword)
+	(self canHandleSpecLayoutAttributeFromKeyword: aKeyword withValue: aValue)
 		ifTrue: [ ^ self createSpecLayoutWithKeyword: aKeyword andValue: aValue ]
 		ifFalse: [ ^ nil ]
 ]
