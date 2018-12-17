@@ -9,7 +9,7 @@ BLUILabel class >> canHandleSpecAttributeInvocation: anInvocation [
 BLUILabel class >> createSpecAttributeFor: anInvocation [
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
-		text:
+		attributeValue:
 			((anInvocation pharoParameters first
 				removePrefix: '''')
 				removeSuffix: '''');

@@ -9,7 +9,7 @@ BLUIValue class >> canHandleSpecAttributeInvocation: anInvocation [
 BLUIValue class >> createSpecAttributeFor: anInvocation [
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
-		text:
+		attributeValue:
 			((anInvocation pharoParameters first removePrefix: '''') removeSuffix: '''');
 		yourself
 ]
