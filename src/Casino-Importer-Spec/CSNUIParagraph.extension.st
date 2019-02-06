@@ -1,6 +1,6 @@
-Extension { #name : #BLUIParagraph }
+Extension { #name : #CSNUIParagraph }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIParagraph class >> specCanHandle: anInvocation [
+CSNUIParagraph class >> specCanHandle: anInvocation [
 	^ anInvocation signature beginsWith: 'newLabel'
 ]

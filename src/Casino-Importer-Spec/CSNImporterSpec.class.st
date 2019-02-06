@@ -3,15 +3,15 @@ I create BL-Model with UI-SubEntities from a Spec application
 "
 Class {
 	#name : #CSNImporterSpec,
-	#superclass : #BLWebModel,
+	#superclass : #CSNWebModel,
 	#category : #'Casino-Importer-Spec-Importer'
 }
 
 { #category : #adding }
 CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ BLUIContainer new ].
-	page := BLUIContainer new name: aFamixClassPresenter name.
+	aFamixClassPresenter ifNil: [ ^ CSNUIContainer new ].
+	page := CSNUIContainer new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
@@ -26,7 +26,7 @@ CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 { #category : #adding }
 CSNImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	page := BLPage new name: aFamixClassPresenter name.
+	page := CSNPage new name: aFamixClassPresenter name.
 	page
 		addAllWidgets:
 			(((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
@@ -199,7 +199,7 @@ CSNImporterSpec >> generateSourceModelWith: aComposablePresenter andPackages: pa
 CSNImporterSpec >> import [
 	"begin"
 	model := MooseModel new name: 'Showroom'; yourself.
-	model add: BLPage new.
+	model add: CSNPage new.
 	^ model
 ]
 

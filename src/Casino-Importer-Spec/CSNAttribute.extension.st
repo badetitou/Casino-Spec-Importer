@@ -1,17 +1,17 @@
-Extension { #name : #BLAttribute }
+Extension { #name : #CSNAttribute }
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> canHandleSpecAttributeInvocation: anInvocation [
+CSNAttribute class >> canHandleSpecAttributeInvocation: anInvocation [
 	^ false
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> canHandleSpecLayoutAttributeFromKeyword: aKeyword withValue: aValue [
+CSNAttribute class >> canHandleSpecLayoutAttributeFromKeyword: aKeyword withValue: aValue [
 	^ false
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> createAttributeFromSpecInvocation: anInvocation [
+CSNAttribute class >> createAttributeFromSpecInvocation: anInvocation [
 	self subclasses
 		do: [ :subclass | 
 			| try |
@@ -23,7 +23,7 @@ BLAttribute class >> createAttributeFromSpecInvocation: anInvocation [
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> createLayoutAttributeFromKeyword: aKeyword withValue: aValue [
+CSNAttribute class >> createLayoutAttributeFromKeyword: aKeyword withValue: aValue [
 	self subclasses
 		do: [ :subclass | 
 			| try |
@@ -35,12 +35,12 @@ BLAttribute class >> createLayoutAttributeFromKeyword: aKeyword withValue: aValu
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> createSpecAttributeFor: anInvocation [
+CSNAttribute class >> createSpecAttributeFor: anInvocation [
 	^ self new
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLAttribute class >> createSpecLayoutWithKeyword: aKeyword andValue: aValue [
+CSNAttribute class >> createSpecLayoutWithKeyword: aKeyword andValue: aValue [
 	^ self new
 		name: (aKeyword removeSuffix: ':');
 		attributeValue: aValue;

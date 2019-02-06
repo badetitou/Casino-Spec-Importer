@@ -1,6 +1,6 @@
-Extension { #name : #BLUISelect }
+Extension { #name : #CSNUISelect }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUISelect class >> specCanHandle: anInvocation [
+CSNUISelect class >> specCanHandle: anInvocation [
 	^ anInvocation signature beginsWith: 'newDropList'
 ]

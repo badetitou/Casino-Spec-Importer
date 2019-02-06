@@ -1,20 +1,20 @@
 Class {
 	#name : #CSNWidgetFactorySpec,
-	#superclass : #BLWidgetFactory,
+	#superclass : #CSNWidgetFactory,
 	#category : #'Casino-Importer-Spec-Importer'
 }
 
 { #category : #accesing }
 CSNWidgetFactorySpec >> createAttributeFrom: anObject [
-	^ BLAttribute createAttributeFromSpecInvocation: anObject.
+	^ CSNAttribute createAttributeFromSpecInvocation: anObject.
 ]
 
 { #category : #accesing }
 CSNWidgetFactorySpec >> createLayoutAttributeFrom: aKeyword with: aValue [
-	^ BLAttribute createLayoutAttributeFromKeyword: aKeyword withValue: aValue
+	^ CSNAttribute createLayoutAttributeFromKeyword: aKeyword withValue: aValue
 ]
 
 { #category : #accesing }
 CSNWidgetFactorySpec >> createWidgetFrom: anObject [
-	^ BLWidget createWidgetFromSpecInvocation: anObject
+	^ CSNWidget createWidgetFromSpecInvocation: anObject
 ]

@@ -1,6 +1,6 @@
-Extension { #name : #BLUITab }
+Extension { #name : #CSNUITab }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUITab class >> specCanHandle: anInvocation [
+CSNUITab class >> specCanHandle: anInvocation [
 	^ anInvocation signature beginsWith: 'newTab'
 ]

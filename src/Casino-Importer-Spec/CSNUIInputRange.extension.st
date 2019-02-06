@@ -1,6 +1,6 @@
-Extension { #name : #BLUIInputRange }
+Extension { #name : #CSNUIInputRange }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIInputRange class >> specCanHandle: anInvocation [
+CSNUIInputRange class >> specCanHandle: anInvocation [
 	^ anInvocation signature beginsWith: 'newSlider'
 ]

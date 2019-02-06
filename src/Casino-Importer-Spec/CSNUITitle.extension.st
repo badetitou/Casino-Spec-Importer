@@ -1,12 +1,12 @@
-Extension { #name : #BLUIValue }
+Extension { #name : #CSNUITitle }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIValue class >> canHandleSpecAttributeInvocation: anInvocation [
-	^ anInvocation signature beginsWith: 'text:'
+CSNUITitle class >> canHandleSpecAttributeInvocation: anInvocation [
+	^ anInvocation signature beginsWith: 'help:'
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIValue class >> createSpecAttributeFor: anInvocation [
+CSNUITitle class >> createSpecAttributeFor: anInvocation [
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
 		attributeValue:

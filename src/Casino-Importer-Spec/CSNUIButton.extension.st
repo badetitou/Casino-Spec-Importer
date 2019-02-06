@@ -1,6 +1,6 @@
-Extension { #name : #BLUIButton }
+Extension { #name : #CSNUIButton }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIButton class >> specCanHandle: anInvocation [
+CSNUIButton class >> specCanHandle: anInvocation [
 	^ anInvocation signature beginsWith: 'newButton'
 ]

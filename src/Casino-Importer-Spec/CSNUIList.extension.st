@@ -1,6 +1,6 @@
-Extension { #name : #BLUIList }
+Extension { #name : #CSNUIList }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIList class >> specCanHandle: anInvocation [
+CSNUIList class >> specCanHandle: anInvocation [
 	^ #('newIconList' 'newList') anySatisfy: [ :keyword | anInvocation signature beginsWith: keyword ]  
 ]

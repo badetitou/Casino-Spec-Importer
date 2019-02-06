@@ -1,12 +1,12 @@
-Extension { #name : #BLUITitle }
+Extension { #name : #CSNUIPlaceholder }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUITitle class >> canHandleSpecAttributeInvocation: anInvocation [
-	^ anInvocation signature beginsWith: 'help:'
+CSNUIPlaceholder class >> canHandleSpecAttributeInvocation: anInvocation [
+	^ anInvocation signature beginsWith: 'ghostText:'
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLUITitle class >> createSpecAttributeFor: anInvocation [
+CSNUIPlaceholder class >> createSpecAttributeFor: anInvocation [
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
 		attributeValue:

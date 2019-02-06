@@ -1,12 +1,12 @@
-Extension { #name : #BLUIDisabled }
+Extension { #name : #CSNUIDisabled }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIDisabled class >> canHandleSpecAttributeInvocation: anInvocation [
+CSNUIDisabled class >> canHandleSpecAttributeInvocation: anInvocation [
 	^ (anInvocation signature beginsWith: 'enabled:') or: [ (anInvocation signature beginsWith: 'disable' ) ]
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIDisabled class >> createSpecAttributeFor: anInvocation [
+CSNUIDisabled class >> createSpecAttributeFor: anInvocation [
 	(anInvocation signature beginsWith: 'disable')
 		ifTrue: [ ^ self new disabled: true ].
 	^ self new

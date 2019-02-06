@@ -1,12 +1,12 @@
-Extension { #name : #BLUILabel }
+Extension { #name : #CSNUILabel }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUILabel class >> canHandleSpecAttributeInvocation: anInvocation [
+CSNUILabel class >> canHandleSpecAttributeInvocation: anInvocation [
 	^ anInvocation signature beginsWith: 'label:'
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-BLUILabel class >> createSpecAttributeFor: anInvocation [
+CSNUILabel class >> createSpecAttributeFor: anInvocation [
 	^ self new
 		name: (anInvocation pharoKeywords first removeSuffix: ':');
 		attributeValue:

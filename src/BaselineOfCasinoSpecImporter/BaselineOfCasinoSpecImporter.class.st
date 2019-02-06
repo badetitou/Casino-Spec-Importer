@@ -18,11 +18,11 @@ BaselineOfCasinoSpecImporter >> baseline: spec [
 { #category : #baselines }
 BaselineOfCasinoSpecImporter >> defineDependencies: spec [
 	spec
-			baseline: 'BLToolkit' 
+			baseline: 'Casino' 
 			with: [ 
 				spec
 				loads: 'core-extented';
-				repository: 'github://badetitou/BL-Toolkit:master/src'.].
+				repository: 'github://badetitou/Casino:master/src'.].
 ]
 
 { #category : #baselines }
@@ -34,6 +34,6 @@ BaselineOfCasinoSpecImporter >> defineGroups: spec [
 { #category : #baselines }
 BaselineOfCasinoSpecImporter >> definePackages: spec [
 	spec
-		repository: 'https://github.com/badetitou/BL-ToolKit';
-		package: 'Casino-Importer-Spec' with: [ spec requires: #('BLToolkit')].
+		repository: 'https://github.com/badetitou/Casino';
+		package: 'Casino-Importer-Spec' with: [ spec requires: #('Casino')].
 ]

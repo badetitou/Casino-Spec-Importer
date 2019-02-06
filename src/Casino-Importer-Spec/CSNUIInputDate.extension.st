@@ -1,6 +1,6 @@
-Extension { #name : #BLUIInputDate }
+Extension { #name : #CSNUIInputDate }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUIInputDate class >> specCanHandle: anInvocation [
+CSNUIInputDate class >> specCanHandle: anInvocation [
 	^ (anInvocation pharoParameters ifEmpty: [^ false ] ifNotEmpty: [:el | el at: 1]) beginsWith: 'DatePresenter'
 ]

@@ -1,6 +1,6 @@
-Extension { #name : #BLUITree }
+Extension { #name : #CSNUITree }
 
 { #category : #'*Casino-Importer-Spec' }
-BLUITree class >> specCanHandle: anInvocation [
+CSNUITree class >> specCanHandle: anInvocation [
 	^ anInvocation signature beginsWith: 'newTree'
 ]

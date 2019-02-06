@@ -6,5 +6,5 @@ Class {
 
 { #category : #accessing }
 CSNSpecWidgetFinderEnd >> tryFindFromInvocations: invocations with: anImporter [
-    ^ BLWidget new
+    ^ CSNWidget new
 ]
