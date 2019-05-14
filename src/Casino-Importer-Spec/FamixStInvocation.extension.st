@@ -1,8 +1,7 @@
-Extension { #name : #FAMIXInvocation }
+Extension { #name : #FamixStInvocation }
 
 { #category : #'*Casino-Importer-Spec' }
-FAMIXInvocation >> pharoKeywords [
-	| keywords finalText |
+FamixStInvocation >> pharoKeywords [
 	(self signature includesSubstring: ':')
 		ifFalse: [ ^ {} ].
 	^ ((self signature replaceAllRegex: '\(.*\)' with: '') substrings: ':')
@@ -10,7 +9,7 @@ FAMIXInvocation >> pharoKeywords [
 ]
 
 { #category : #'*Casino-Importer-Spec' }
-FAMIXInvocation >> pharoParameters [
+FamixStInvocation >> pharoParameters [
 	| keywords finalText |
 	(self sourceText includesSubstring: ':')
 		ifFalse: [ ^ {} ].

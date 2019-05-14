@@ -21,9 +21,9 @@ SmalltalkImporterSourceAnchor >> createMethod: aCompiledMethod [
 		do: [ :aRPackage | 
 			(aCompiledMethod isExtensionInPackage: aRPackage)
 				ifTrue: [ method parentPackage: (self ensurePackage: aRPackage) ] ].
-	method hasClassScope: aCompiledMethod methodClass isMeta.
+	method isClassSide: aCompiledMethod methodClass isMeta.
 	method
-		category:
+		protocol:
 			(aCompiledMethod methodClass organization
 				categoryOfElement: aCompiledMethod selector).
 	method isPublic: true.
