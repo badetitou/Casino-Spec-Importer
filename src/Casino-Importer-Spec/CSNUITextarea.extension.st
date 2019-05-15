@@ -2,5 +2,5 @@ Extension { #name : #CSNUITextarea }
 
 { #category : #'*Casino-Importer-Spec' }
 CSNUITextarea class >> specCanHandle: anInvocation [
-	^ anInvocation signature = 'newText()'
+	^ #('newText' 'newCode') anySatisfy: [ :possibility | anInvocation signature beginsWith: possibility ]
 ]
