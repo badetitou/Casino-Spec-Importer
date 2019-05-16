@@ -10,8 +10,8 @@ Class {
 { #category : #adding }
 CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ CSNUIContainer new ].
-	page := CSNUIContainer new name: aFamixClassPresenter name.
+	aFamixClassPresenter ifNil: [ ^ CSNBusinessPage new ].
+	page := CSNBusinessPage new name: aFamixClassPresenter name.
 	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection
 		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
