@@ -72,7 +72,11 @@ CSNImporterSpec >> computeWidgetAddByVariable: aVariable in: aPresenter [
 
 { #category : #'private - processing' }
 CSNImporterSpec >> createFactory [
-	factory := CSNWidgetFactorySpec new model: model; yourself
+	factory := CSNWidgetFactorySpec new
+		model: model;
+		importer: self;
+		addVisitorImporter: CSNModelImporterSpecVisitor new;
+		yourself
 ]
 
 { #category : #'private - processing' }
@@ -152,10 +156,7 @@ CSNImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
 
 { #category : #'private - processing' }
 CSNImporterSpec >> findFromInvocations: invocations [
-	| widget |
-	widget := CSNSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
-	self model add: widget.
-	^ widget
+	^ CSNSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self
 ]
 
 { #category : #'private - processing' }

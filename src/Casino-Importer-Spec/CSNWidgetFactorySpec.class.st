@@ -15,6 +15,6 @@ CSNWidgetFactorySpec >> createLayoutAttributeFrom: aKeyword with: aValue [
 ]
 
 { #category : #accesing }
-CSNWidgetFactorySpec >> createWidgetFrom: anObject [
-	^ CSNWidget createWidgetFromSpecInvocation: anObject
+CSNWidgetFactorySpec >> createWidgetFor: anObject withParent: aParent [
+	^ (CSNWidget newFrom: anObject for: aParent withImporters: visitorImporters)
 ]

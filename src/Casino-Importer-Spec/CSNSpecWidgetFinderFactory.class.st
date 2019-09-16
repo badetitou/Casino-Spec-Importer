@@ -12,7 +12,10 @@ CSNSpecWidgetFinderFactory >> initialize [
 
 { #category : #accessing }
 CSNSpecWidgetFinderFactory >> tryFindFromInvocations: invocations with: anImporter [
-    ^ (anImporter factoryCreateWidgetFrom: invocations first)
-        ifNil: [ self next tryFindFromInvocations: invocations with: anImporter ]
-ifNotNil: [ :widget | widget source: invocations first; yourself ]
+	^ (anImporter factoryCreateWidgetFrom: invocations first)
+		ifNil: [ self next tryFindFromInvocations: invocations with: anImporter ]
+		ifNotNil: [ :widget | 
+			widget
+				source: invocations first;
+				yourself ]
 ]
