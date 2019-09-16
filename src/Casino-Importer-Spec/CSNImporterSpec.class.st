@@ -10,23 +10,22 @@ Class {
 { #category : #adding }
 CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	aFamixClassPresenter ifNil: [ ^ CSNBusinessPage new ].
-	page := CSNBusinessPage new name: aFamixClassPresenter name.
-	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection
-		sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
+	page := self factory create: CSNBusinessPage.
+	aFamixClassPresenter ifNil: [ ^ page ].
+	page name: aFamixClassPresenter name.
+	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
 		do: [ :createWidgetInvocation | 
 			| widget |
 			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
 			page addWidget: widget ].
-	model silentlyAdd: page.
 	^ page
 ]
 
 { #category : #adding }
 CSNImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 	| page |
-	page := CSNPage new name: aFamixClassPresenter name.
+	page := (self factory create: CSNPage) name: aFamixClassPresenter name.
 	page
 		addAllWidgets:
 			(((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1)
@@ -34,8 +33,7 @@ CSNImporterSpec >> addToModelFirstFamixClassPresenter: aFamixClassPresenter [
 				sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
 				select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
 				collect: [ :createWidgetInvocation | 
-					self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter ]).
-	model add: page
+					self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter ])
 ]
 
 { #category : #'private - processing' }
@@ -156,6 +154,7 @@ CSNImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
 CSNImporterSpec >> findFromInvocations: invocations [
 	| widget |
 	widget := CSNSpecWidgetFinderFactory new tryFindFromInvocations: invocations with: self.
+	self model add: widget.
 	^ widget
 ]
 
@@ -210,7 +209,7 @@ CSNImporterSpec >> importPresenter: aComposablePresenter [
 
 { #category : #api }
 CSNImporterSpec >> importPresenter: aComposablePresenter withPackages: packages [
-	model := MooseModel new name: aComposablePresenter package name.
+	model := CSNUIMooseModel new name: aComposablePresenter package name.
 	self preImport.
 	sourceModel := self generateSourceModelWith: aComposablePresenter andPackages: packages .
 	self

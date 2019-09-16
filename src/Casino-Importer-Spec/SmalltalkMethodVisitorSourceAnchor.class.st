@@ -110,9 +110,7 @@ SmalltalkMethodVisitorSourceAnchor >> visitVariableNode: aVariableNode [
 				ifTrue: [ global := importer ensureGlobalVariable: #SmalltalkGlobalVariable value: Smalltalk.
 					access := self createAccessTo: global writing: false ]
 				ifFalse: [ namedEntity := self resolve: aVariableNode name.
-					access := (namedEntity isKindOf: self importer factory containerEntity)
-						ifTrue: [ self createReferenceTo: namedEntity ]
-						ifFalse: [ self createAccessTo: namedEntity writing: false ] ].
+					access := (namedEntity isKindOf: self importer factory classEntity) ifTrue: [ self createReferenceTo: namedEntity ] ifFalse: [ self createAccessTo: namedEntity writing: false ] ].
 			access
 				sourceAnchor:
 					(FAMIXPharoPositionAnchor new
