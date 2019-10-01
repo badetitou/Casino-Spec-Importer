@@ -25,7 +25,7 @@ CSNModelImporterSpecVisitor >> visitCSNUIInputCheckbox: aCSNUIInputCheckbox [
 
 { #category : #visiting }
 CSNModelImporterSpecVisitor >> visitCSNUIInputDate: aCSNUIInputDate [
-	^ ((source pharoParameters ifEmpty: [^ false ] ifNotEmpty: [:el | el at: 1]) beginsWith: 'DatePresenter')
+	^ ((source pharoParameters ifEmpty: [^ nil ] ifNotEmpty: [:el | el at: 1]) beginsWith: 'DatePresenter')
 		ifTrue: [ self create: aCSNUIInputDate fromSource: source ]
 		ifFalse: [ nil ]
 ]
@@ -52,7 +52,7 @@ CSNModelImporterSpecVisitor >> visitCSNUIInputText: aCSNUIInputText [
 	^ (source signature beginsWith: 'newTextInput')
 		ifTrue: [ | input |
 			input := self create: aCSNUIInputText fromSource: source.
-			input addAttribute: ((self create: CSNUIPlaceholder) text: (source parameters at: 1 ifAbsent: [ '' ])).
+			input addAttribute: ((self create: CSNUIPlaceholder) attributeValue: (source pharoParameters at: 1 ifAbsent: [ '' ])).
 			input ]
 		ifFalse: [ nil ]
 ]
