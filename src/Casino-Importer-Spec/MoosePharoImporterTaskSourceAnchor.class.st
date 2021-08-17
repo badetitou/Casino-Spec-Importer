@@ -13,5 +13,5 @@ MoosePharoImporterTaskSourceAnchor >> defaultImporterClass [
 { #category : #'initialize-release' }
 MoosePharoImporterTaskSourceAnchor >> initialize [
 	super initialize.
-	factory := SmalltalkMetamodelFactory 
+	factory := SmalltalkMetamodelFactory new
 ]

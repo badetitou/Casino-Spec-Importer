@@ -22,7 +22,7 @@ BaselineOfCasinoSpecImporter >> defineDependencies: spec [
 			with: [ 
 				spec
 				loads: 'core-extented';
-				repository: 'github://badetitou/Casino:master/src'.].
+				repository: 'github://badetitou/Casino:v2/src'.].
 ]
 
 { #category : #baselines }

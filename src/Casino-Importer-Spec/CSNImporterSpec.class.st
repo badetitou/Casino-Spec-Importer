@@ -9,16 +9,16 @@ Class {
 
 { #category : #adding }
 CSNImporterSpec >> addToModelFamixClassPresenter: aFamixClassPresenter [
+
 	| page |
 	page := self factory create: CSNBusinessPage.
 	aFamixClassPresenter ifNil: [ ^ page ].
 	page name: aFamixClassPresenter name.
-	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
-		select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ])
-		do: [ :createWidgetInvocation | 
-			| widget |
-			widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
-			page addWidget: widget ].
+	((((aFamixClassPresenter methods select: [ :method | method name = 'defaultSpec' ]) at: 1) outgoingInvocations asOrderedCollection sort: [ :a :b | 
+		  a sourceAnchor startPos < b sourceAnchor startPos ]) select: [ :a | a receiver isNil and: [ self isAddingLayout: a ] ]) do: [ :createWidgetInvocation | 
+		| widget |
+		widget := self exploreCreateWidget: createWidgetInvocation in: aFamixClassPresenter.
+		page addWidget: widget ].
 	^ page
 ]
 
@@ -47,13 +47,12 @@ CSNImporterSpec >> computeAttributeFromInvocations: invocations forWidget: aWidg
 
 { #category : #adding }
 CSNImporterSpec >> computeStartPosOfAccessAfter: anAccess [
+
 	" If the access is an affectation (blabla := hello). We have to take the endPos of the access itSelf"
 
-	anAccess isWrite
-		ifTrue: [ ^ anAccess sourceAnchor endPos ].
-	^ (((anAccess from accesses asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ])
-		select: [ :access | access sourceAnchor startPos > anAccess sourceAnchor startPos ]) at: 1 ifAbsent: [ ^ anAccess from sourceAnchor sourceText size ])
-		sourceAnchor startPos
+	anAccess isWrite ifTrue: [ ^ anAccess sourceAnchor endPos ].
+	^ (((anAccess source accesses asOrderedCollection sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]) select: [ :access | 
+		    access sourceAnchor startPos > anAccess sourceAnchor startPos ]) at: 1 ifAbsent: [ ^ anAccess source sourceAnchor sourceText size ]) sourceAnchor startPos
 ]
 
 { #category : #'private - processing' }
@@ -92,39 +91,36 @@ CSNImporterSpec >> createLayoutAttributeFrom: aCreationWidgetInvocation for: wid
 
 { #category : #'private - processing' }
 CSNImporterSpec >> exploreAccess: anAccess [
+
 	"Must return a widget"
 
 	| widget |
 	widget := self findFromInvocations: (self outgoingInvocationOfAccess: anAccess).
 	self
-		computeAttributeFromInvocations:
-			(anAccess to accessors
-				collect: [ :accessor | 
-					| localAccesses |
-					localAccesses := accessor accesses select: [ :anLocalAccess | anLocalAccess to = anAccess to ].
-					accessor outgoingInvocations
-						select: [ :invoc |
-							localAccesses
-								anySatisfy: [ :anLocalAccess | 
-									invoc sourceAnchor startPos >= anLocalAccess sourceAnchor startPos
-										and: [ invoc sourceAnchor endPos <= (self computeStartPosOfAccessAfter: anLocalAccess) ] ] ] ]) asOrderedCollection flattened
+		computeAttributeFromInvocations: (anAccess target accessors collect: [ :accessor | 
+				 | localAccesses |
+				 localAccesses := accessor accesses select: [ :anLocalAccess | anLocalAccess target = anAccess target ].
+				 accessor outgoingInvocations select: [ :invoc | 
+					 localAccesses anySatisfy: [ :anLocalAccess | 
+						 invoc sourceAnchor startPos >= anLocalAccess sourceAnchor startPos and: [ 
+							 invoc sourceAnchor endPos <= (self computeStartPosOfAccessAfter: anLocalAccess) ] ] ] ]) asOrderedCollection flattened
 		forWidget: widget.
 	^ widget
 ]
 
 { #category : #'private - processing' }
 CSNImporterSpec >> exploreAddInvocation: aCreationWidgetInvocation in: aPresenter [
+
 	"must return a widget"
 
 	| selector widget |
 	selector := aCreationWidgetInvocation pharoParameters first.
-	widget := (self
-		exploreAccess:
-		((((((aPresenter withSuperclassHierarchy flatCollect: #methods) select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) first) accesses first) to incomingAccesses
-		select: [ :access | access isWrite and: [ access from name = 'initializeWidgets' ] ]) first))
-		name: (selector removePrefix: '#');
-		source: aCreationWidgetInvocation;
-		yourself.
+	widget := (self exploreAccess:
+			           (((aPresenter withSuperclassHierarchy flatCollect: #methods) select: [ :a | (selector copyFrom: 2 to: selector size) = a name ]) first accesses
+				            first target incomingAccesses select: [ :access | access isWrite and: [ access source name = 'initializeWidgets' ] ]) first)
+		          name: (selector removePrefix: '#');
+		          source: aCreationWidgetInvocation;
+		          yourself.
 	self createLayoutAttributeFrom: aCreationWidgetInvocation for: widget.
 	^ widget
 ]
@@ -145,13 +141,10 @@ CSNImporterSpec >> exploreCreateWidget: createWidgetInvocation in: aPresenter [
 
 { #category : #'private - processing' }
 CSNImporterSpec >> findFirstAttributeOfInvocation: anInvocation [
-    ^ ((anInvocation from localVariables
-        select: [ :localVariable | 
-            localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos
-                and: [ localVariable sourceAnchor endPos < anInvocation sourceAnchor endPos ] ])
-        sort:
-            [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ])
-        first
+
+	^ ((anInvocation source localVariables select: [ :localVariable | 
+		    localVariable sourceAnchor startPos > anInvocation sourceAnchor startPos and: [ localVariable sourceAnchor endPos < anInvocation sourceAnchor endPos ] ]) 
+		   sort: [ :localVariableA :localVariableB | localVariableA sourceAnchor startPos < localVariableB sourceAnchor startPos ]) first
 ]
 
 { #category : #'private - processing' }
@@ -191,7 +184,8 @@ CSNImporterSpec >> generateSourceModelWith: aComposablePresenter andPackages: pa
 			('Class' -> true).
 			('Method' -> true).
 			('Attribute' -> true).
-			('Argument' -> true)}.
+			('Argument' -> true)}
+			withCache: false.
 		^ (MooseModel root allModels select: [ :generatedSourceModel | generatedSourceModel name = aComposablePresenter name ]) at: 1
 ]
 
@@ -210,7 +204,7 @@ CSNImporterSpec >> importPresenter: aComposablePresenter [
 
 { #category : #api }
 CSNImporterSpec >> importPresenter: aComposablePresenter withPackages: packages [
-	model := CSNUIMooseModel new name: aComposablePresenter package name.
+	model := CSNUIModel new name: aComposablePresenter package name.
 	self preImport.
 	sourceModel := self generateSourceModelWith: aComposablePresenter andPackages: packages .
 	self
@@ -237,9 +231,9 @@ CSNImporterSpec >> isAddingLayout: anInvocation [
 
 { #category : #'private - processing' }
 CSNImporterSpec >> outgoingInvocationOfAccess: anAccess [
-    ^ (anAccess from outgoingInvocations
-        select: [ :anInvocation | 
-            anInvocation sourceAnchor startPos >= anAccess sourceAnchor startPos
-                and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ])
-        sort: [ :a :b | a sourceAnchor startPos < b sourceAnchor startPos ]
+
+	^ (anAccess source outgoingInvocations select: [ :anInvocation | 
+		   anInvocation sourceAnchor startPos >= anAccess sourceAnchor startPos and: [ anInvocation sourceAnchor endPos <= anAccess sourceAnchor endPos ] ]) sort: [ 
+		  :a 
+		  :b | a sourceAnchor startPos < b sourceAnchor startPos ]
 ]

@@ -26,7 +26,6 @@ SmalltalkImporterSourceAnchor >> createMethod: aCompiledMethod [
 		protocol:
 			(aCompiledMethod methodClass organization
 				categoryOfElement: aCompiledMethod selector).
-	method isPublic: true.
 	method timeStamp: aCompiledMethod timeStamp.
 	importingContext shouldImportMethodBody
 		ifTrue: [ | visitor |
